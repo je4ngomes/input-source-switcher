@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "monitors": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "input_source_1": {
+              "type": "string"
+            },
+            "input_source_2": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "model",
+            "input_source_1",
+            "input_source_2"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "input_source_1": {
+              "type": "string"
+            },
+            "input_source_2": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "model",
+            "input_source_1",
+            "input_source_2"
+          ]
+        }
+      ]
+    },
+    "HOTKEY_TO_SWITCH": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "monitors",
+    "HOTKEY_TO_SWITCH"
+  ]
+}
