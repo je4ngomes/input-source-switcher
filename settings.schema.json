@@ -16,12 +16,16 @@
             },
             "input_source_2": {
               "type": "string"
+            },
+            "monitor_index": {
+              "type": "number"
             }
           },
           "required": [
             "model",
             "input_source_1",
-            "input_source_2"
+            "input_source_2",
+            "monitor_index"
           ]
         },
         {

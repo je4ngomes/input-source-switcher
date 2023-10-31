@@ -2,13 +2,14 @@ import argparse
 import json
 import asyncio
 import logging
-import keyboard
+import os
 
 from logging.handlers import RotatingFileHandler
 from monitorcontrol import get_monitors, InputSource
 
 # Create a rotating file handler that logs to 'input-source-switcher.log', with a maximum size of 1MB and a backup count of 1
-logginHandler = RotatingFileHandler('input-source-switcher.log', maxBytes=1000000, backupCount=1)
+log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'input-source-switcher.log')
+logginHandler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=1)
 
 # Set the log format to include the time
 formatter = logging.Formatter('%(asctime)s %(message)s')
@@ -23,44 +24,42 @@ input_sources = {
   'DP1': InputSource.DP1,
   'DP2': InputSource.DP2,
 }
-monitors = get_monitors()
 
-def read_config_file(file_path):
+def read_config_file():
+  file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "settings.json")
   with open(file_path, 'r') as f:
     return json.load(f);
   
 # function that return a dictory of monitor name and inputs, if monitor with same name is found add count property
-def get_monitor_inputs():
-  monitors_dict = {}
-  
-  for monitor in monitors:
+def get_detected_monitors() -> list[dict]:
+  detected_monitors = []
+
+  for index, monitor in enumerate(get_monitors(), 0):
     with monitor:
       caps = monitor.get_vcp_capabilities()
+
+      detected_monitors.append({
+        'monitor_ctx': monitor,
+        'model': caps['model'],
+        'inputs': caps['inputs'],
+        'index': index+1,
+      })
       
-      model = caps['model']
-      if model in monitors_dict:
-        monitors_dict[model]['count'] += 1
-      else:
-        monitors_dict[model] = {
-          'inputs': caps['inputs'],
-          'monitor': monitor,
-          'count': 1,
-        }
-      
-  return monitors_dict
+  return detected_monitors
   
 def list_monitors():
-  monitors_inputs = get_monitor_inputs()
+  detected_monitors = get_detected_monitors()
   
-  for monitor, value in monitors_inputs.items():
-    print('Monitor Model: {}'.format(monitor))
+  # for monitor, value in monitors_inputs.items():
+  for detected_monitor in detected_monitors:
+    print('Monitor Model: {}'.format(detected_monitor.get('model')))
     print('Input sources: {}'.format(
       ', '.join(
-        input_source.name for input_source in value['inputs']
+        input_source.name for input_source in detected_monitor.get('inputs')
         )
       )
     )
-    print('Count: {}'.format(value['count']))
+    print('Monitor index: {}'.format(detected_monitor.get('index')))
     print('=' * 30)
   
 def setup_args():
@@ -68,72 +67,54 @@ def setup_args():
   
   parser.add_argument(
     '--list',
-    help='list monitors',
+    help='list monitor details to fill in settings.json',
     action='store_true',
-  )
-  
-  parser.add_argument(
-    '-f',
-    metavar='file',
-    type=str,
-    help='The path to the JSON file to read',
-    dest='file',
-    required=False,
   )
   
   args = parser.parse_args();
   
   if args.list:
-    return list_monitors()
-    
-  if args.file is None:
-    msg = 'Settings file required. Use -f or --file to specify a file'
-    logging.error(msg)
-    raise Exception(msg)
-
-  if not args.file.endswith('.json'):
-    msg = 'File must be a JSON file'
-    logging.error(msg)
-    raise Exception(msg)
+    list_monitors();
+    exit();
 
   return args
 
-def toggle_monitor_input(config, monitors_inputs):  
+def toggle_monitor_input(config, detected_monitors):  
   model = config['model']
+  monitor_index = config['monitor_index']
   input_source_1 = config['input_source_1']
   input_source_2 = config['input_source_2']
 
-  if monitors_inputs.get(model):
-    monitor = monitors_inputs[model]['monitor']
-    with monitor:
-      current_input = monitor.get_input_source()
-      
-      if current_input == input_sources[input_source_1]:
-        logging.info('Switching monitor input to {}'.format(input_source_2))
-        monitor.set_input_source(input_sources[input_source_2])
-      elif current_input == input_sources[input_source_2]:
-        logging.info('Switching monitor input to {}'.format(input_source_1))
-        monitor.set_input_source(input_sources[input_source_1])
-      else:
-        logging.error('Monitor {} is not set to either input source'.format(model))
-  else:
-    logging.error('Monitor {} is not connected'.format(model))
+  for detected_monitor in detected_monitors:
+    if detected_monitor.get('index') == monitor_index and detected_monitor.get('model') == model:
+      monitor = detected_monitor['monitor_ctx']
+      with monitor:
+        current_input = monitor.get_input_source()
+    
+        if current_input == input_sources[input_source_1]:
+          logging.info('Switching monitor input to {}'.format(input_source_2))
+          # monitor.set_input_source(input_sources[input_source_2])
+        elif current_input == input_sources[input_source_2]:
+          logging.info('Switching monitor input to {}'.format(input_source_1))
+          # monitor.set_input_source(input_sources[input_source_1])
+        else:
+          logging.error('Monitor {} is not set to either input source'.format(model))
 
 
 args = setup_args()
 
 #load file settings
-file_settings = read_config_file(args.file)
+file_settings = read_config_file()
 
 async def main():
   execution_start_time = asyncio.get_running_loop().time()
-  monitors_inputs = get_monitor_inputs()
+  detected_monitors = get_detected_monitors()
   
   
   tasks = [
     asyncio.to_thread(
-      toggle_monitor_input, monitor, monitors_inputs
-    ) for monitor in file_settings['monitors']
+      toggle_monitor_input, monitor_settings, detected_monitors
+    ) for monitor_settings in file_settings['monitors']
   ]
   
   await asyncio.gather(*tasks)  
@@ -142,20 +123,13 @@ async def main():
   logging.info('Took {} seconds'.format(execution_end_time - execution_start_time))
   logging.shutdown()
   
-  
-def on_hotkey_press(*args):
-  logging.info('Hotkey pressed, initiating monitor input switch')
-  asyncio.run(main())
-  
 
-
-try:
-  logging.info('Program started...')
-  keyboard.add_hotkey(file_settings['HOTKEY_TO_SWITCH'], on_hotkey_press)
+if __name__ == '__main__':
+  try:
+    logging.info('Script triggered')
+    asyncio.run(main())
+  except:
+    logging.info('Exiting...')
+    logging.shutdown()
+    exit()
   
-  print('Press ESC to stop') 
-  keyboard.wait('esc')
-except KeyboardInterrupt:
-  print('Exiting...')
-  logging.info('Exiting...')
-  logging.shutdown()
