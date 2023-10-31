@@ -93,10 +93,10 @@ def toggle_monitor_input(config, detected_monitors):
     
         if current_input == input_sources[input_source_1]:
           logging.info('Switching monitor input to {}'.format(input_source_2))
-          # monitor.set_input_source(input_sources[input_source_2])
+          monitor.set_input_source(input_sources[input_source_2])
         elif current_input == input_sources[input_source_2]:
           logging.info('Switching monitor input to {}'.format(input_source_1))
-          # monitor.set_input_source(input_sources[input_source_1])
+          monitor.set_input_source(input_sources[input_source_1])
         else:
           logging.error('Monitor {} is not set to either input source'.format(model))
 
