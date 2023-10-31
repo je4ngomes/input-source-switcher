@@ -48,13 +48,9 @@
           ]
         }
       ]
-    },
-    "HOTKEY_TO_SWITCH": {
-      "type": "string"
     }
   },
   "required": [
-    "monitors",
-    "HOTKEY_TO_SWITCH"
+    "monitors"
   ]
 }

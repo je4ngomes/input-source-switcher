@@ -1,3 +1,3 @@
 @echo off
-set script_path="C:\Users\Jean\Documents\input-source-switcher\input-source-switcher.py"
+set script_path="<SCRIPT_PATH>"
 start /min python %script_path% %*

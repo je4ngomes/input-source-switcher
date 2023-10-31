@@ -34,7 +34,10 @@ Python script designed to enable seamless switching between two different monito
 }
 ```
 If you are unsure of the monitor index, run `python input_source_switcher.py --list` to list all connected monitors and their index.\n
+3. Edit `run.bat` to point to the correct python executable and script path
 4. Create a shortcut from run.bat and move it to windows `C:\ProgramData\Microsoft\Windows\Start Menu\Programs`
+5. Add a hotkey to the shortcut by right clicking on the shortcut, selecting properties and then setting the shortcut key
+  [Hotkey Example](/img/hotkey.jpg)
   - Obs: If changes don't take effect immediately, try restarting the computer or just logging out and logging back in.
 
 To change back to the previous input source from the other computer, you will need to run the script on that computer as well.
