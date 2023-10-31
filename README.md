@@ -30,7 +30,6 @@ Python script designed to enable seamless switching between two different monito
       "monitor_index": 3
     }
  ],
- "HOTKEY_TO_SWITCH": "ctrl+shift+["
 }
 ```
 If you are unsure of the monitor index, run `python input_source_switcher.py --list` to list all connected monitors and their index.\n
