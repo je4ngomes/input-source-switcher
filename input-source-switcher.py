@@ -3,6 +3,7 @@ import json
 import asyncio
 import logging
 import os
+import pyautogui
 
 from logging.handlers import RotatingFileHandler
 from monitorcontrol import get_monitors, InputSource
@@ -118,6 +119,14 @@ async def main():
   ]
   
   await asyncio.gather(*tasks)  
+  
+  if (file_settings.get('TRIGGER_SYNERGY', False)):
+    logging.info('Triggering synergy')
+    logging.info('Switching mouse and keyboard')
+    pyautogui.hotkey('ctrl', 'shift', '<');
+    logging.info('Locking mouse to screen');
+    pyautogui.hotkey('ctrl', 'shift', '>'); 
+  
   execution_end_time = asyncio.get_running_loop().time()
   
   logging.info('Took {} seconds'.format(execution_end_time - execution_start_time))

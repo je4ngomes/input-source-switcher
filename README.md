@@ -30,6 +30,7 @@ Python script designed to enable seamless switching between two different monito
       "monitor_index": 3
     }
  ],
+  "TRIGGER_SYNERGY": false
 }
 ```
 If you are unsure of the monitor index, run `python input_source_switcher.py --list` to list all connected monitors and their index.\n
@@ -43,8 +44,17 @@ If you are unsure of the monitor index, run `python input_source_switcher.py --l
 
 To change back to the previous input source from the other computer, you will need to run the script on that computer as well.
 
+## Synergy integration
+To enable seamless switching between the two computers, you can use [Synergy](https://github.com/DEAKSoftware/Synergy-Binaries) to share the keyboard and mouse between the two computers. To do so, follow the steps below:
+1. Install Synergy on both computers
+2. Configure Synergy to share the keyboard and mouse between the two computers
+3. Configure two hotkeys on Synergy:
+  - To switch between the two computers
+  - To toggle locking the mouse to the current computer
+4. Edit `settings.json` to specify true or false on `TRIGGER_SYNERGY`
+
 ## Command line arguments
 - `--list` - Lists all connected monitors and their index
 
 ## TODO
-  - [ ] Add trigger to simultaneously switch the keyboard and mouse using [Synergy](https://github.com/DEAKSoftware/Synergy-Binaries)
+  - [x] Add trigger to simultaneously switch the keyboard and mouse using **Synergy**
