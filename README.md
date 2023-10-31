@@ -51,7 +51,7 @@ To enable seamless switching between the two computers, you can use [Synergy](ht
 3. Configure two hotkeys on Synergy:
     - To switch between the two computers
     - To toggle locking the mouse to the current computer
-4. Edit `settings.json` to specify true or false on `TRIGGER_SYNERGY`
+4. Edit `settings.json` to specify `True` or `False` on `TRIGGER_SYNERGY`
 
 ## Command line arguments
 - `--list` - Lists all connected monitors and their index
