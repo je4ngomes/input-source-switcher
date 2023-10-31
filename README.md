@@ -33,11 +33,14 @@ Python script designed to enable seamless switching between two different monito
  "HOTKEY_TO_SWITCH": "ctrl+shift+["
 }
 ```
-If you are unsure of the monitor index, run `python input_source_switcher.py --list` to list all connected monitors and their index.
-4. Create a shortcut from run.bat and move it to windows C:\ProgramData\Microsoft\Windows\Start Menu\Programs
+If you are unsure of the monitor index, run `python input_source_switcher.py --list` to list all connected monitors and their index.\n
+4. Create a shortcut from run.bat and move it to windows `C:\ProgramData\Microsoft\Windows\Start Menu\Programs`
   - Obs: If changes don't take effect immediately, try restarting the computer or just logging out and logging back in.
 
 To change back to the previous input source from the other computer, you will need to run the script on that computer as well.
+
+## Command line arguments
+- `--list` - Lists all connected monitors and their index
 
 ## TODO
   - [ ] Add trigger to simultaneously switch the keyboard and mouse using [Synergy](https://github.com/amankhoza/synergy-binaries)
