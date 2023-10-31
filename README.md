@@ -48,4 +48,4 @@ To change back to the previous input source from the other computer, you will ne
 - `--list` - Lists all connected monitors and their index
 
 ## TODO
-  - [ ] Add trigger to simultaneously switch the keyboard and mouse using [Synergy](https://github.com/amankhoza/synergy-binaries)
+  - [ ] Add trigger to simultaneously switch the keyboard and mouse using [Synergy](https://github.com/DEAKSoftware/Synergy-Binaries)
